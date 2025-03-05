@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:pharmacy_app_updated/constants/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,8 +10,14 @@ class DioConfig {
 
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
-        final token = _getToken();
-        options.headers['Authorization'] = 'Bearer $token';
+        final SharedPreferences localStorage =
+            await SharedPreferences.getInstance();
+        final tokenData = localStorage.getString('token');
+        if (tokenData != null) {
+          final token = json.decode(tokenData);
+          logger.w("--Token details from interceptor : $token");
+          options.headers['Authorization'] = 'Bearer $token';
+        }
         options.headers['Content-Type'] = 'application/json';
         logger.d('Request: ${options.method} ${options.path}');
         return handler.next(options);
@@ -28,12 +36,5 @@ class DioConfig {
     ));
 
     return dio;
-  }
-
-  static dynamic _getToken() async {
-    final SharedPreferences localStorage =
-        await SharedPreferences.getInstance();
-    final token = localStorage.getString('token');
-    return token;
   }
 }

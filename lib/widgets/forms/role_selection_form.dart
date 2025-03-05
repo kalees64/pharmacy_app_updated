@@ -2,15 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:pharmacy_app_updated/constants/colors.dart';
+import 'package:pharmacy_app_updated/constants/logger.dart';
+import 'package:pharmacy_app_updated/screens/dashboard_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RoleSelectionForm extends StatefulWidget {
-  const RoleSelectionForm(
-      {super.key, required this.userRoles, this.user, this.token});
+  const RoleSelectionForm({super.key, required this.userRoles});
 
-  final List<dynamic> userRoles; // Ensure it's a list
-  final Map<String, dynamic>? user;
-  final String? token;
+  final List<dynamic> userRoles;
 
   @override
   State<RoleSelectionForm> createState() => _RoleSelectionFormState();
@@ -35,12 +34,15 @@ class _RoleSelectionFormState extends State<RoleSelectionForm> {
     final selectedRoleDetails = widget.userRoles
         .firstWhere((role) => role['roleId'].toString() == _selectedRole);
 
-    print("Selected Role : $_selectedRole");
-    print("Selected Role Details : $selectedRoleDetails");
+    logger.d("Selected Role : $_selectedRole");
+    logger.d("Selected Role Details : $selectedRoleDetails");
 
     final SharedPreferences localStorage =
         await SharedPreferences.getInstance();
     await localStorage.setString('user', json.encode(selectedRoleDetails));
+
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => DashboardScreen()));
 
     setState(() {
       isLoading = false;

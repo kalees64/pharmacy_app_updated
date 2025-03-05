@@ -38,4 +38,22 @@ class AuthService {
     final String? token = localStorage.getString('token');
     return token;
   }
+
+  dynamic getUserRolesByUserId(Map<String, dynamic> data) async {
+    try {
+      final url = '$apiUrl/auth/role';
+      final res = await _http.post(url, data: data);
+      logger.i("--Fetching user roles response : $res");
+
+      if (res.statusCode == 200) {
+        return res.data;
+      }
+
+      if (res.statusCode == 404) {
+        return null;
+      }
+    } catch (e) {
+      logger.e("--Error while fetching user roles : $e");
+    }
+  }
 }

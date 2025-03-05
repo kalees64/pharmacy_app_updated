@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 const Color primaryColor = Colors.cyan;
 const List<Color> gradientColors = [
-  const Color.fromARGB(36, 0, 187, 212),
-  const Color.fromARGB(123, 0, 187, 212)
+  Color.fromARGB(36, 0, 187, 212),
+  Color.fromARGB(123, 0, 187, 212)
 ];
 const Color appBarColor = Colors.cyan;
 const Color inputBoxColor = Colors.black;
