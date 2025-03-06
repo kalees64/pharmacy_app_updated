@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pharmacy_app_updated/constants/colors.dart';
 import 'package:pharmacy_app_updated/constants/logger.dart';
+import 'package:pharmacy_app_updated/constants/navigator.dart';
 import 'package:pharmacy_app_updated/guard/auth.guard.dart';
+import 'package:pharmacy_app_updated/screens/medicines/add_medicine_screen.dart';
+import 'package:pharmacy_app_updated/screens/qr_scanner/qr_select_screen.dart';
 import 'package:pharmacy_app_updated/services/medicine.service.dart';
 import 'package:pharmacy_app_updated/widgets/ui/headings.dart';
 
@@ -47,14 +50,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
             message: "Add Medicine",
             child: IconButton(
               icon: Icon(Icons.local_pharmacy_outlined),
-              onPressed: () {},
+              onPressed: () {
+                navigateTo(context, AddMedicineScreen());
+              },
             ),
           ),
           Tooltip(
             message: "Scanner",
             child: IconButton(
               icon: Icon(Icons.qr_code_scanner_outlined),
-              onPressed: () {},
+              onPressed: () {
+                navigateTo(context, QrSelectScreen());
+              },
             ),
           ),
           IconButton(

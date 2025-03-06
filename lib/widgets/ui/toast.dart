@@ -8,14 +8,14 @@ class ToastNotification {
     required BuildContext context,
     required String message,
     IconData icon = Icons.notifications,
-    Color color = Colors.green,
+    Color color = toastColor,
     Duration duration = const Duration(seconds: 2),
   }) {
     DelightToastBar(
       builder: (context) => ToastCard(
         leading: Icon(icon),
         title: Text(message),
-        color: toastColor,
+        color: color,
       ),
       autoDismiss: true,
       snackbarDuration: duration,
