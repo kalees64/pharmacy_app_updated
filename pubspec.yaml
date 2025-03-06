@@ -18,13 +18,22 @@ dependencies:
   pretty_qr_code: ^3.3.0
   qr_flutter: ^4.1.0
   mobile_scanner: ^6.0.7
+  image: ^4.5.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: "^0.14.3"
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/pharmacy_logo.png
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/pharmacy_app_icon.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true

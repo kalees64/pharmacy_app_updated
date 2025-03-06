@@ -6,25 +6,26 @@ import 'package:pharmacy_app_updated/screens/dashboard_screen.dart';
 import 'package:pharmacy_app_updated/services/medicine.service.dart';
 import 'package:pharmacy_app_updated/widgets/ui/headings.dart';
 import 'package:pharmacy_app_updated/widgets/ui/toast.dart';
-import 'package:uuid/uuid.dart';
+// import 'package:uuid/uuid.dart';
 
-class AddMedicineForm extends StatefulWidget {
-  const AddMedicineForm({super.key, this.originalQrCodeData});
+class UpdateMedicineForm extends StatefulWidget {
+  const UpdateMedicineForm({super.key, required this.medicineAccessCode});
 
-  final String? originalQrCodeData;
-
+  final String medicineAccessCode;
   @override
-  State<AddMedicineForm> createState() => _AddMedicineFormState();
+  State<UpdateMedicineForm> createState() => _UpdateMedicineFormState();
 }
 
-class _AddMedicineFormState extends State<AddMedicineForm> {
+class _UpdateMedicineFormState extends State<UpdateMedicineForm> {
   final _formKey = GlobalKey<FormState>();
+
+  dynamic _medicine;
 
   dynamic _medicines = [];
   dynamic _dosageForms = [];
   dynamic _doses = [];
-  final dynamic _compositions = [];
-  final dynamic _taxes = [];
+  dynamic _compositions = [];
+  dynamic _taxes = [];
 
   bool isLoading = false;
 
@@ -85,6 +86,7 @@ class _AddMedicineFormState extends State<AddMedicineForm> {
 
   @override
   void initState() {
+    fetchMedicine();
     fetchMedicines();
     fetchDosageForms();
     fetchDoses();
@@ -101,6 +103,21 @@ class _AddMedicineFormState extends State<AddMedicineForm> {
       });
     } catch (e) {
       logger.e("Error while fetching medicines: $e");
+    }
+  }
+
+  void fetchMedicine() async {
+    try {
+      final res = await medicineService
+          .getMedicineAccessCode(widget.medicineAccessCode);
+      logger.i("Fetched Medicine : $res");
+
+      setState(() {
+        _medicine = res[0];
+      });
+      patchFormValues(res[0]);
+    } catch (e) {
+      logger.e("Error while fetching medicine: $e");
     }
   }
 
@@ -128,6 +145,38 @@ class _AddMedicineFormState extends State<AddMedicineForm> {
     } catch (e) {
       logger.e("Error while fetching doses: $e");
     }
+  }
+
+  void patchFormValues(dynamic data) {
+    setState(() {
+      _medicineNameController.text = data['medicineName'] ?? '';
+      _manufacturerController.text = data['manufacturerName'] ?? '';
+      _batchNoController.text = data['batchNumber'] ?? '';
+      _usageIndicationsController.text = data['usageIndications'] ?? '';
+      _dosageFormController.text = data['dosageForm'] ?? '';
+      _doseController.text = data['unitOfMeasurement'] ?? '';
+
+      _supplierNameController.text = data['supplierName'] ?? '';
+      _invoiceNumberController.text = data['invoiceNumber'] ?? '';
+      _purchaseDateController.text = data['purchaseDate'] ?? '';
+      _receivedQuantityController.text = data['receivedQuantity'] ?? '';
+      _purchasePricePerUnitController.text = data['purchasePricePerUnit'] ?? '';
+      _totalPurChaseCostController.text = data['totalPurchaseCost'] ?? '';
+      _stockLocationController.text = data['stockLocation'] ?? '';
+      _currentStockQuantityController.text = data['currentStockQuantity'] ?? '';
+      _minimumStockLevelController.text = data['minimumStockLevel'] ?? '';
+      _maximumStockLevelController.text = data['maximumStockLevel'] ?? '';
+      _drugLicenceNumberController.text = data['drugLicenseNumber'] ?? '';
+      _scheduleCategoryController.text = data['scheduleCategory'] ?? '';
+      _manufactureDateController.text = data['manufacturedDate'] ?? '';
+      _expiryDateController.text = data['expiryDate'] ?? '';
+      _storageConditionsController.text = data['storageConditions'] ?? '';
+      _sellingPricePerUnitController.text = data['sellingPricePerUnit'] ?? '';
+      _discountController.text = data['discount'] ?? '';
+
+      _compositions = data['compositions'] ?? [];
+      _taxes = data['taxDetails'] ?? [];
+    });
   }
 
   void autoFetchManufacturerName(String medicineName) {
@@ -267,33 +316,34 @@ class _AddMedicineFormState extends State<AddMedicineForm> {
       });
       return;
     }
-    final uuid = Uuid();
-    final newAccessCode = "assaycr-${uuid.v4()}";
+    // final uuid = Uuid();
+    // final newAccessCode = "assaycr-${uuid.v4()}";
 
-    final newQrCode =
-        await medicineService.generateQrCodeDataUrl(newAccessCode);
+    // final newQrCode =
+    //     await medicineService.generateQrCodeDataUrl(newAccessCode);
 
-    final Map<String, dynamic> newMedicine = {
+    final Map<String, dynamic> updateMedicine = {
       ...medicinePayload,
-      "originalQrCodeData": widget.originalQrCodeData,
-      "reLabeledQrCode": newQrCode,
-      "currentQrAccessCode": newAccessCode
+      "originalQrCodeData": _medicine["originalQrCodeData"],
+      "reLabeledQrCode": _medicine["reLabeledQrCode"],
+      "currentQrAccessCode": widget.medicineAccessCode
     };
 
+    logger.i("--updated medicine : $updateMedicine");
+
     try {
-      final res = await medicineService.addMedicine(newMedicine);
-      logger.i("Added medicine Response : $res");
+      final res =
+          await medicineService.updateMedicine(updateMedicine, _medicine["id"]);
+      logger.i("Update medicine Response : $res");
       setState(() {
         isLoading = false;
       });
       ToastNotification.showToast(
-          context: context, message: "New Medicine Added Successfully");
+          context: context, message: "Medicine Updated Successfully");
       navigateTo(context, DashboardScreen());
     } catch (e) {
       logger.e("--Error while add new medicine : $e");
     }
-
-    logger.i("--new medicine : $newMedicine");
 
     setState(() {
       isLoading = false;
@@ -355,46 +405,53 @@ class _AddMedicineFormState extends State<AddMedicineForm> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           h2("1. Basic Details"),
-                          Autocomplete<String>(
-                            optionsBuilder:
-                                (TextEditingValue textEditingValue) async {
-                              if (textEditingValue.text.isEmpty) {
-                                return const Iterable<String>.empty();
-                              }
+                          // Autocomplete<String>(
+                          //   optionsBuilder:
+                          //       (TextEditingValue textEditingValue) async {
+                          //     if (textEditingValue.text.isEmpty) {
+                          //       return const Iterable<String>.empty();
+                          //     }
 
-                              final filteredMedicines = _medicines.where(
-                                  (medicine) {
-                                final medicineName =
-                                    medicine['medicineName']?.toString() ?? '';
-                                return medicineName.toLowerCase().contains(
-                                    textEditingValue.text.toLowerCase());
-                              }).map<String>((medicine) =>
-                                  medicine['medicineName']?.toString() ?? '');
+                          //     final filteredMedicines = _medicines.where(
+                          //         (medicine) {
+                          //       final medicineName =
+                          //           medicine['medicineName']?.toString() ?? '';
+                          //       return medicineName.toLowerCase().contains(
+                          //           textEditingValue.text.toLowerCase());
+                          //     }).map<String>((medicine) =>
+                          //         medicine['medicineName']?.toString() ?? '');
 
-                              return filteredMedicines; // Ensuring it's Iterable<String>
-                            },
-                            onSelected: (String selectedMedicine) {
-                              autoFetchManufacturerName(selectedMedicine);
-                              _medicineNameController.text = selectedMedicine;
-                            },
-                            fieldViewBuilder: (BuildContext context,
-                                TextEditingController textEditingController,
-                                FocusNode focusNode,
-                                VoidCallback onFieldSubmitted) {
-                              return TextField(
-                                controller: textEditingController,
-                                focusNode: focusNode,
-                                onChanged: (value) {
-                                  if (value.isNotEmpty) {
-                                    _medicineNameController.text = value;
-                                  }
-                                },
-                                decoration: const InputDecoration(
-                                  labelText: 'Medicine name',
-                                  border: OutlineInputBorder(),
-                                ),
-                              );
-                            },
+                          //     return filteredMedicines; // Ensuring it's Iterable<String>
+                          //   },
+                          //   onSelected: (String selectedMedicine) {
+                          //     autoFetchManufacturerName(selectedMedicine);
+                          //     _medicineNameController.text = selectedMedicine;
+                          //   },
+                          //   fieldViewBuilder: (BuildContext context,
+                          //       TextEditingController textEditingController,
+                          //       FocusNode focusNode,
+                          //       VoidCallback onFieldSubmitted) {
+                          //     return TextField(
+                          //       controller: textEditingController,
+                          //       focusNode: focusNode,
+                          //       onChanged: (value) {
+                          //         if (value.isNotEmpty) {
+                          //           _medicineNameController.text = value;
+                          //         }
+                          //       },
+                          //       decoration: const InputDecoration(
+                          //         labelText: 'Medicine name',
+                          //         border: OutlineInputBorder(),
+                          //       ),
+                          //     );
+                          //   },
+                          // ),
+                          _buildTextField(
+                            'Medicine Name',
+                            'medicineName',
+                            false,
+                            keyBoardType: TextInputType.text,
+                            controller: _medicineNameController,
                           ),
                           _buildTextField(
                             'Manufacturer',

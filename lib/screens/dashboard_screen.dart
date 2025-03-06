@@ -3,10 +3,14 @@ import 'package:pharmacy_app_updated/constants/colors.dart';
 import 'package:pharmacy_app_updated/constants/logger.dart';
 import 'package:pharmacy_app_updated/constants/navigator.dart';
 import 'package:pharmacy_app_updated/guard/auth.guard.dart';
+import 'package:pharmacy_app_updated/screens/login_screen.dart';
 import 'package:pharmacy_app_updated/screens/medicines/add_medicine_screen.dart';
+import 'package:pharmacy_app_updated/screens/medicines/view_medicine_screen.dart';
 import 'package:pharmacy_app_updated/screens/qr_scanner/qr_select_screen.dart';
 import 'package:pharmacy_app_updated/services/medicine.service.dart';
 import 'package:pharmacy_app_updated/widgets/ui/headings.dart';
+import 'package:pharmacy_app_updated/widgets/ui/toast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -39,6 +43,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
+  void logout() async {
+    final SharedPreferences localStorage =
+        await SharedPreferences.getInstance();
+    localStorage.remove('user');
+    localStorage.remove('token');
+    localStorage.clear();
+    navigateToHard(context, LoginScreen());
+    ToastNotification.showToast(
+        context: context, message: "Logged out successfully!");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,7 +81,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           IconButton(
             icon: Icon(Icons.logout),
-            onPressed: () {},
+            onPressed: logout,
           )
         ],
         backgroundColor: appBarColor,
@@ -102,7 +117,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             itemBuilder: (ctx, index) {
                               final medicine = _medicines[index];
                               return InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  navigateTo(
+                                    context,
+                                    ViewMedicineScreen(medicine: medicine),
+                                  );
+                                },
                                 child: Card(
                                   child: ListTile(
                                     title: Text(

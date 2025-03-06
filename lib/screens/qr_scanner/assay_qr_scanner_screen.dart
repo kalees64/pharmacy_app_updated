@@ -59,7 +59,9 @@ class _AssayQrScannerScreenState extends State<AssayQrScannerScreen>
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => UpdateMedicineScreen(),
+              builder: (context) => UpdateMedicineScreen(
+                medicineAccessCode: barcodes.first.rawValue!,
+              ),
             ),
           );
 
@@ -85,7 +87,9 @@ class _AssayQrScannerScreenState extends State<AssayQrScannerScreen>
             final result = await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => UpdateMedicineScreen(),
+                builder: (context) => UpdateMedicineScreen(
+                  medicineAccessCode: res[0]["currentQrAccessCode"],
+                ),
               ),
             );
 

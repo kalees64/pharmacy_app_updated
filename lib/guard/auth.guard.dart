@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pharmacy_app_updated/screens/login_screen.dart';
 import 'package:pharmacy_app_updated/services/auth.service.dart';
 
 class AuthGuard extends StatefulWidget {
@@ -43,9 +44,7 @@ class _AuthGuardState extends State<AuthGuard> {
     if (user != null && token != null) {
       return widget.child;
     } else {
-      return Center(
-        child: Text('Please log in to continue.'),
-      );
+      return LoginScreen();
     }
   }
 }

@@ -94,6 +94,20 @@ class MedicineService {
     }
   }
 
+  dynamic updateMedicine(dynamic data, int id) async {
+    try {
+      final url = "$apiUrl/medicines/$id";
+      final res = await _http.patch(url, data: data);
+      logger.d("Update Medicine Response : $res");
+
+      if (res.statusCode == 201) {
+        return res.data;
+      }
+    } catch (e) {
+      logger.e("Error while updating medicine : $e");
+    }
+  }
+
   dynamic generateQrCodeDataUrl(String data) async {
     // final qrCode = QrCode(8, QrErrorCorrectLevel.H)..addData(data);
 

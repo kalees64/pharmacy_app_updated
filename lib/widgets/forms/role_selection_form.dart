@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:pharmacy_app_updated/constants/colors.dart';
 import 'package:pharmacy_app_updated/constants/logger.dart';
+import 'package:pharmacy_app_updated/constants/navigator.dart';
 import 'package:pharmacy_app_updated/screens/dashboard_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,8 +42,7 @@ class _RoleSelectionFormState extends State<RoleSelectionForm> {
         await SharedPreferences.getInstance();
     await localStorage.setString('user', json.encode(selectedRoleDetails));
 
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => DashboardScreen()));
+    navigateToHard(context, DashboardScreen());
 
     setState(() {
       isLoading = false;
